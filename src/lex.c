@@ -23,20 +23,36 @@ int main(int argc,char *argv[]){
     char ch='a';
     char buffer[128];
     char *type;
+    uint8_t indc = 0;//KEEP TRACK OF INDENTS
+    
     uint8_t iflag = 0;//NUMBER
     uint8_t sflag = 0;//STRING
     uint8_t pflag = 0;//PAREN
     uint8_t vflag = 0;//VARIABLE
+    uint8_t cflag = 0;//CONDITIONAL
 
-    //char tokens[128][128];
     fp = fopen(argv[1],"r");
     script = read(fp);
     while(ch!='\0'){
         ch = script[count];
-        /*if(ch == ' '){//IGNORE SPACES
-            count++;
-            continue;
-        }*/
+        if(strcmp(buffer,"agar ") == 0){
+            printf("IF STATE: AGAR\n");
+            memset(buffer, 0, sizeof buffer);
+            index = 0;
+            cflag = 1;
+        }
+        else if(cflag == 1){
+            if(strcmp(" phir",buffer) == 0){
+                memset(buffer, 0, sizeof buffer);
+                index = 0;
+            }
+            if(strcmp(buffer,"    ") == 0 ||strcmp(buffer,"\t") == 0 || ch == '\t'){
+                indc++;
+                memset(buffer, 0, sizeof buffer);
+                index = 0;
+            }
+            //GET INDENT TO WORK
+        }
         if(strcmp(buffer,"ank ") == 0){
             vflag = 1;
             type = "ank";
@@ -64,7 +80,6 @@ int main(int argc,char *argv[]){
                 vflag = 0;
                 memset(buffer, 0, sizeof buffer);
                 index = 0;
-
             }
         }
         else if(isdigit(ch)){//NUMBER
@@ -121,7 +136,7 @@ int main(int argc,char *argv[]){
         index+=1;
         count+=1;
         //printf("%c\n",ch);
-        printf("buffer: %s\n",buffer);
+        //printf("buffer: %s\n",buffer);
 
     }
 }
