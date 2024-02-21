@@ -5,7 +5,7 @@
 #include<ctype.h>
 #include"lex.h"
 #include "../header/lang-struct.h"
-struct lexeme *tok;
+struct lexeme tok;
 struct lexeme lexemes[24];
 struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
     int count = 0;
@@ -25,22 +25,22 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
     while(1){
         ch = script[count];
         if(strcmp(buffer,"agar ") == 0){
-            tok->token = AGAR_IF;
-            strcpy(tok->desc,"kw");
-            tok->cflag = 1;
-            tok->lflag = 0;
+            tok.token = AGAR_IF;
+            strcpy(tok.desc,"kw");
+            tok.cflag = 1;
+            tok.lflag = 0;
             memset(buffer, 0, sizeof buffer);
             index = 0;
             tcount++;
-            lexemes[tcount]  = *tok ;
+            lexemes[tcount]  = tok ;
         }
         if(strcmp(buffer," hai") == 0){
-            tok->token = HAI_ASSGN;
-            strcpy(tok->desc,"equ");
-            tok->cflag = cflag;
-            tok->lflag = lflag;
+            tok.token = HAI_ASSGN;
+            strcpy(tok.desc,"equ");
+            tok.cflag = cflag;
+            tok.lflag = lflag;
             tcount++;
-            lexemes[tcount]  = *tok ;
+            lexemes[tcount]  = tok ;
             
         }
         else if(cflag == 1){
@@ -50,12 +50,12 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
             }
             if(linechar == 0 && isalpha(ch) && cflag == 1){
                 indc--;
-                tok->token = AGAR_ENDIF;
-                strcpy(tok->desc,"eif");
-                tok->cflag = 0;
-                tok->lflag = 0;
+                tok.token = AGAR_ENDIF;
+                strcpy(tok.desc,"eif");
+                tok.cflag = 0;
+                tok.lflag = 0;
                 tcount++;
-                lexemes[tcount]  = *tok ;
+                lexemes[tcount]  = tok ;
             }
             else if(strcmp(buffer,"    ") == 0 ||strcmp(buffer,"\t") == 0 || ch == '\t'){
                 indc++;
@@ -65,14 +65,14 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
         }
         if(strcmp(buffer, "dauhrao") == 0){
             lflag = 1;
-            tok->token = DAUHRAO_FOR;
-            strcpy(tok->desc,"for");
-            tok->cflag = 0;
-            tok->lflag = 1;
+            tok.token = DAUHRAO_FOR;
+            strcpy(tok.desc,"for");
+            tok.cflag = 0;
+            tok.lflag = 1;
             memset(buffer, 0, sizeof buffer);
             tcount++;
             index = 0;
-            lexemes[tcount]  = *tok ;
+            lexemes[tcount]  = tok ;
         }
         if(strcmp(buffer,"    ") == 0 ||strcmp(buffer,"\t") == 0 || ch == '\t'){
             indc++;
@@ -81,21 +81,21 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
         }
         else if(linechar == 0 && isalpha(ch) && lflag == 1){
             indc--;
-            tok->token = DAUH_ENDFOR;
-            strcpy(tok->desc,"efor");
-            tok->lflag = 0;
-            tok->cflag = 0;
+            tok.token = DAUH_ENDFOR;
+            strcpy(tok.desc,"efor");
+            tok.lflag = 0;
+            tok.cflag = 0;
             tcount++;            
-            lexemes[tcount]  = *tok ;
+            lexemes[tcount]  = tok ;
         }
         else if(lflag == 1){
             if(strcmp(buffer," se ") == 0){
-                tok->token = SE_RANGE;
-                strcpy(tok->desc,"to");
-                tok->lflag = 1;
-                tok->cflag = 0;
+                tok.token = SE_RANGE;
+                strcpy(tok.desc,"to");
+                tok.lflag = 1;
+                tok.cflag = 0;
                 tcount++;
-                lexemes[tcount]  = *tok ;
+                lexemes[tcount]  = tok ;
             }
             else if(strcmp(buffer,"baar") == 0){
                 memset(buffer, 0, sizeof buffer);
@@ -104,27 +104,30 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
         }
         if(strcmp(buffer,"ank ") == 0){
             dvflag = 1;
-            tok->token = ANK_INT;
-            tok->cflag = cflag;
-            tok->lflag = lflag;
+            strcpy(tok.desc,"ank");
+            tok.token = ANK_INT;
+            tok.cflag = cflag;
+            tok.lflag = lflag;
             memset(buffer, 0, sizeof buffer);
             index = 0;
             tcount++;
-            lexemes[tcount]  = *tok ;
+            lexemes[tcount]  = tok ;
         }
         else if(strcmp(buffer,"shabd ") == 0){
             dvflag = 1;
-            tok->token = SHABD_STR;
+            strcpy(tok.desc,"shbd");
+            tok.token = SHABD_STR;
             memset(buffer, 0, sizeof buffer);
             index = 0;
-            tok->cflag = cflag;
-            tok->lflag = lflag;
+            tok.cflag = cflag;
+            tok.lflag = lflag;
             tcount++;
-            lexemes[tcount]  = *tok ;
+            lexemes[tcount]  = tok ;
         }
         else if(strcmp(buffer,"sachai ") == 0){
             dvflag = 1;
-            tok->token = SACHAI_BOOL;
+            strcpy(tok.desc,"sach");
+            tok.token = SACHAI_BOOL;
             memset(buffer, 0, sizeof buffer);
             index = 0;
         }
@@ -133,15 +136,14 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
         }
         else if(dvflag == 1){
             if(ch == ' '){//WHY NOT JUST USE ONE CONDITION WITH AND THO-
-                strcpy(tok->desc,buffer);
-                //printf("VARIABLE: %s TYPE: %s\n",tok->desc,tok->token);
+                strcpy(tok.desc,buffer);
                 dvflag = 0;
                 memset(buffer, 0, sizeof buffer);
                 index = 0;
-                tok->lflag = lflag;
-                tok->cflag = cflag;
+                tok.lflag = lflag;
+                tok.cflag = cflag;
                 tcount++;
-                lexemes[tcount]  = *tok ;
+                lexemes[tcount]  = tok ;
             }
         }
         if(ch == '$' && dvflag == 0){
@@ -150,15 +152,15 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
             vflag = 1;  
         }
         else if(!isalnum(ch) && vflag == 1){
-            strcpy(tok->desc,buffer);
+            strcpy(tok.desc,buffer);
             //printf("VARIABLE: %s\n",buffer);
             memset(buffer, 0, sizeof buffer);
             index = 0;
             vflag = 0;
-            tok->lflag = lflag;
-            tok->cflag = cflag;
+            tok.lflag = lflag;
+            tok.cflag = cflag;
             tcount++;
-            lexemes[tcount]  = *tok ;
+            lexemes[tcount]  = tok ;
         }
         else if(isdigit(ch)){//NUMBER
             if(sflag == 0){
@@ -171,44 +173,42 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
         }
         else if(!isdigit(ch) && iflag == 1){
             iflag = 0;
-            tok->token = INT_CONST;
-            strcpy(tok->desc,buffer);
-            tok->lflag = lflag;
-            tok->cflag = cflag;
+            tok.token = INT_CONST;
+            strcpy(tok.desc,buffer);
+            tok.lflag = lflag;
+            tok.cflag = cflag;
             memset(buffer, 0, sizeof buffer);
             index = 0;
             tcount++;
-            lexemes[tcount]  = *tok ;
+            lexemes[tcount]  = tok ;
         }
         if(ch == '+' || ch == '-'||ch == '*'||ch == '/'||ch == '%'){
-            tok->token = ARITH_OPERAT;
-            strcpy("OP",tok->desc);//CHANGE THIS
-            tok->cflag = cflag;
-            tok->lflag = lflag;
+            tok.token = ARITH_OPERAT;
+            strcpy("OP",tok.desc);//CHANGE THIS
+            tok.cflag = cflag;
+            tok.lflag = lflag;
             tcount++;
-            lexemes[tcount]  = *tok ;            
+            lexemes[tcount]  = tok ;            
         }
-        //YAHA SE BAAKI HAI
-        //PLEASE TOKENIZE THEM INTO STRUCTS
         else if(ch=='('){
             if(isalpha(script[count-1])){
-                tok->token = LPAREN;
-                strcpy(tok->desc,"lp");
-                tok->cflag = cflag;
-                tok->lflag = lflag;
+                tok.token = LPAREN;
+                strcpy(tok.desc,"lp");
+                tok.cflag = cflag;
+                tok.lflag = lflag;
                 tcount++;
-                lexemes[tcount]  = *tok ;                
+                lexemes[tcount]  = tok ;                
             }
             else{
                 pflag=1;
-                tok->token = PUNCT;
-                strcpy(tok->desc,"pnc");
-                tok->cflag = cflag;
-                tok->lflag = lflag;
+                tok.token = PUNCT;
+                strcpy(tok.desc,"pnc");
+                tok.cflag = cflag;
+                tok.lflag = lflag;
                 memset(buffer, 0, sizeof buffer);
                 index = 0;             
                 tcount++;   
-                lexemes[tcount]  = *tok ;
+                lexemes[tcount]  = tok ;
             }
         }
         else if(ch =='"'){
@@ -220,15 +220,15 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
                 continue;
             }
             else if(sflag == 1){//end string
-                tok->token = STR_CONST;
-                strcpy(tok->desc,"str");
-                tok->cflag = cflag;
-                tok->lflag = lflag;
+                tok.token = STR_CONST;
+                strcpy(tok.desc,"str");
+                tok.cflag = cflag;
+                tok.lflag = lflag;
                 memset(buffer, 0, sizeof buffer);
                 index=0;
                 sflag = 0;
                 tcount++;
-                lexemes[tcount]  = *tok ;
+                lexemes[tcount]  = tok ;
             }
         }
         else if(ch == '\n'){
@@ -248,7 +248,7 @@ struct lexeme *tokenize(char script[128], uint8_t lflag, uint8_t cflag){
         count+=1;
         linechar+=1;
         //printf("%c\n",ch);
-        printf("buffer: %s\n",buffer);
+        //printf("buffer: %s\n",buffer);
     }
     return lexemes;
 }
